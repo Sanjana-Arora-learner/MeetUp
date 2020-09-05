@@ -1,0 +1,106 @@
+sqlite3 MeetUpDB.db
+.databases
+.open MeetUpDB.db
+create table LuRoles(RoleId INTEGER NOT NULL PRIMARY KEY, RoleName TEXT NOT NULL);
+INSERT INTO LuRoles(RoleId, RoleName) VALUES (1, 'SuperUser');
+INSERT INTO LuRoles(RoleId, RoleName) VALUES (2, 'NormalUser');
+select * from luroles;
+
+create table LuCategories(CategoryeId INTEGER NOT NULL PRIMARY KEY, CategoryName TEXT NOT NULL);
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (1,'Outdoors');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (2,'Adventures');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (3,'Health');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (4,'Social Activities');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (5,'Careers');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (6,'Technologies');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (7,'Science');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (8,'Entertainment');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (9,'Media');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (10,'Music');
+INSERT INTO LuCategories(CategoryeId, CategoryName) VALUES (11,'News');
+select * from LuCategories;
+
+create table LuLocations(LocationId INTEGER NOT NULL PRIMARY KEY, LocationName TEXT NOT NULL);
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (1, 'Chennai');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (2, 'Bangalore');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (3, 'Coimbatore');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (4, 'Kochin');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (5, 'Mumbai');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (6, 'Hyderabad');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (7, 'Pune');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (8, 'Delhi');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (9, 'Orisa');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (10, 'Gujarat');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (11, 'Rajasthan');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (12, 'Noida');
+INSERT INTO LuLocations(LocationId, LocationName) VALUES (13, 'Gurgon');
+select * from LuLocations;
+
+create table LuEventStatus(EventStatusId INTEGER NOT NULL PRIMARY KEY, EventStatusName TEXT NOT NULL);
+INSERT INTO LuEventStatus(EventStatusId, EventStatusName) VALUES (1, 'Active');
+INSERT INTO LuEventStatus(EventStatusId, EventStatusName) VALUES (2, 'Cancelled');
+select * from LuEventStatus;
+
+create table LuRegisteredEventStatus(RegisteredEventStatusId INTEGER NOT NULL PRIMARY KEY, RegisteredEventStatusName TEXT NOT NULL);
+INSERT INTO LuRegisteredEventStatus(RegisteredEventStatusId, RegisteredEventStatusName) VALUES (1, 'Registered');
+INSERT INTO LuRegisteredEventStatus(RegisteredEventStatusId, RegisteredEventStatusName) VALUES (2, 'CancelledByUser');
+INSERT INTO LuRegisteredEventStatus(RegisteredEventStatusId, RegisteredEventStatusName) VALUES (3, 'EventCancelled');
+INSERT INTO LuRegisteredEventStatus(RegisteredEventStatusId, RegisteredEventStatusName) VALUES (4, 'Attended');
+select * from LuRegisteredEventStatus;
+
+create table LuRates(RateId INTEGER NOT NULL PRIMARY KEY, RateName TEXT NOT NULL);
+INSERT INTO LuRates(RateId, RateName) VALUES (1, '1 Star');
+INSERT INTO LuRates(RateId, RateName) VALUES (2, '2 Stars');
+INSERT INTO LuRates(RateId, RateName) VALUES (3, '3 Stars');
+INSERT INTO LuRates(RateId, RateName) VALUES (4, '4 Stars');
+INSERT INTO LuRates(RateId, RateName) VALUES (5, '5 Stars');
+select * from LuRates;
+
+CREATE TABLE Users(UserId INTEGER NOT NULL PRIMARY KEY, RoleId INTEGER NOT NULL, 
+	EMailId TEXT NOT NULL, UserName TEXT NOT NULL, 
+	LocationId INTEGER NOT NULL, Password TEXT NOT NULL,
+	FOREIGN KEY (RoleId)
+	       REFERENCES LuRoles (RoleId),
+	FOREIGN KEY (LocationId)
+	       REFERENCES LuLocations (LocationId));
+INSERT INTO Users VALUES(1, 1, 'test1@testtest.com', 'admin', 1, 'admin');
+INSERT INTO Users VALUES(2, 2, 'test2@testtest.com', 'normaluser', 2, 'normaluser');
+select * from  Users;
+
+CREATE TABLE Events(EventId INTEGER NOT NULL PRIMARY KEY, EventName TEXT NOT NULL,   	EventStartDate TEXT NOT NULL, EventEndDate TEXT NOT NULL, 
+	LocationId INTEGER NOT NULL, CategoryId INTEGER NOT NULL, EventStatusId INTEGER NOT NULL, 
+	CreatedBy INTEGER NOT NULL, CreatedDate TEXT NOT NULL, ModifiedDate TEXT NOT NULL,
+FOREIGN KEY (LocationId)
+       REFERENCES LuLocations (LocationId),
+FOREIGN KEY (CategoryId)
+       REFERENCES LuCategories (CategoryId),
+FOREIGN KEY (EventStatusId)
+       REFERENCES LuEventStatus (EventStatusId),
+FOREIGN KEY (CreatedBy)
+       REFERENCES Users (UserId));
+
+CREATE TABLE UserRegisteredEvents(UserRegisteredEventId INTEGER NOT NULL PRIMARY KEY, UserId INTEGER NOT NULL, 
+	EventId INTEGER NOT NULL, RegisteredEventStatusId INTEGER NOT NULL,
+FOREIGN KEY (UserId)
+       REFERENCES Users (UserId),
+FOREIGN KEY (EventId)
+       REFERENCES Events (EventId)
+FOREIGN KEY (RegisteredEventStatusId)
+       REFERENCES LURegisteredEventStatus (RegisteredEventStatusId));
+
+CREATE TABLE UserRegisterEventNotifications(NotificationId INTEGER NOT NULL PRIMARY KEY, 
+	UserRegisteredEventId INTEGER NOT NULL, Notification TEXT NOT NULL,
+FOREIGN KEY (UserRegisteredEventId)
+       REFERENCES UserRegisteredEvents (UserRegisteredEventId));
+
+CREATE TABLE UserComments(UserCommentId INTEGER NOT NULL PRIMARY KEY, 
+	UserId INTEGER NOT NULL, EventId INTEGER NOT NULL, 
+	RateId INTEGER NOT NULL, Comments TEXT NOT NULL,
+FOREIGN KEY (UserId)
+       REFERENCES Users (UserId),
+FOREIGN KEY (EventId)
+       REFERENCES Events (EventId)
+FOREIGN KEY (RateId)
+       REFERENCES LURates (RateId));
+
+.quit
